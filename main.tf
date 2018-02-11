@@ -14,7 +14,7 @@ data "terraform_remote_state" "ec2_cluster" {
 module "elb_http" {
   source = "terraform-aws-modules/elb/aws"
 
-  name = "my-cluster-elb"
+  name = "${var.elb_name}"
 
   subnets         = ["subnet-b6df2bd2"]
   security_groups = ["sg-a8d2e9cc"]
