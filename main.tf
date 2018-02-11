@@ -4,6 +4,12 @@ provider "aws" {
   secret_key = "${var.secret_key}"
 }
 
+data "terraform_remote_state" "ec2_cluster" {
+  backend = "atlas"
+  config {
+    name         = "${var.remote_path}"
+  }
+}
 
 module "elb_http" {
   source = "terraform-aws-modules/elb/aws"
@@ -40,11 +46,15 @@ module "elb_http" {
   // ]
 
   // ELB attachments
-  // number_of_instances = 2
-  // instances           = ["i-06ff41a77dfb5349d", "i-4906ff41a77dfb53d"]
+  number_of_instances = 2
+  instances           = "${data.terraform_remote_state.ec2_cluster.ec2_instance_ids}"
 
   tags = {
     Owner       = "Ignas"
     Environment = "dev"
   }
+}
+
+output "ec2_ids" {
+  value = "${data.terraform_remote_state.ec2_cluster.ec2_instance_ids}"
 }
